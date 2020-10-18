@@ -1,0 +1,8 @@
+{
+  "token": "",
+  "listenid": "", //your discord id
+  "prefix": "#",
+  "email": "example@gmail.com", //or username if offline mode (remove password when doing this)
+  "password": "ABC123"
+
+}
