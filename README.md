@@ -11,7 +11,7 @@ Usage:
 
 config.json:
 
-1. `token` is your discord bot token.\n
+1. `token` is your discord bot token.
 2. `listenid` is your discord id, so only you can use it to prevent others from abusing it.
 3. `prefix` is what the bot will listen to when using commands.
 4. `email` and `password`, self-explanatory, email becomes username if you leave password blank when using the offline mode.
