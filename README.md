@@ -1,5 +1,7 @@
 # MCChatbot
 
+I'd recommand just not using this but you do you
+
 Usage:
 
 1. Extract it somewhere, make sure it has its own folder, otherwise your a file hoarder.
