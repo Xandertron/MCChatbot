@@ -6,9 +6,11 @@ Usage:
 
 1. Extract it somewhere, make sure it has its own folder, otherwise your a file hoarder.
 2. Get a Discord bot. Theres thousands of tutorials, all you need is your token.
-2. Fill out the data in config.json.
-3. Run `npm install` in the directory. It will take awhile.
-4. Finally run `node index.js`
+3. Fill out the data in config.json.
+4. Run `npm install` in the directory. It will take awhile.
+5. Finally run `node index.js`
+
+6. When the bot starts, you may run #connect <host> [port] to connect to a server, #viewer to start/stop the viewer, and #disconnect to leave the server (also stops the viewer) .
 
 
 config.json:
