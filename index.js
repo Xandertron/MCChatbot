@@ -1,9 +1,14 @@
-const mc = require('minecraft-protocol');
+//im 100% sure this works and wont error randomly
+//ok maybe 75%
+const mineflayer = require('mineflayer')
+const mineflayerViewer = require('prismarine-viewer').mineflayer
 const Discord = require("discord.js");
 const dclient = new Discord.Client();
 const config = require("./config.json");
-const prefix = config.prefix
+const prefix = "#"
+let bot
 var connected = false
+var viewer = false
 console.log("Starting...")
 dclient.login(config.token);
 
@@ -12,81 +17,80 @@ dclient.on("ready", () => {
 });
 
 dclient.on("message", message => {
-							  
-	if (message.author.bot) return;
-	//his is checking for your id, i'd advise keeping it to prevent abuse from users, otherwide delete the below line
-	if (message.author.id != config.listenid) return;
-	//if we didnt get a command from the user then send it as a chat message
+	if (message.author.bot || message.author.id != config.ownerid) return;
 	if (!message.content.startsWith(prefix)) {
 		if (connected) {
-			mcclient.write('chat', {message: message.content});
+			bot.chat(message.content)
 		}
 	}
-	//else handle commands
     const args = message.content.slice(prefix.length).trim().split(" ");
     const command = args.shift().toLowerCase();
     if (command == "connect") {
-    	//permanently store the channel so we dont lose it like an idiot
+		if (connected) return;
     	chann = message.channel
-    	//get the port from the arguments, or use the default (25565)
-    	var nport = (args[1] == undefined) ? 25565 : args[1]
-    	//finally create the client that will connect to the server with the options
-    	mcclient = mc.createClient({
+    	const nport = (args[1] == undefined) ? 25565 : args[1]
+    	bot = mineflayer.createBot({
     		host: args[0],
     		port: nport,
 		  	username: config.email,
 		  	password: config.password
 		});
-		//self-explanatory
-		mcclient.on('connect', function () {
+		bot.on('login', function () {
 			chann.send('Connected!')
 			connected = true
 		})
-		mcclient.on('disconnect', function (packet) {
-			chann.send('Disconnected: ' + packet.reason)
-			mcclient.end()
+		bot.on('kicked', (reason, loggedIn) => {
+			chann.send('Kicked: '+reason)
 			connected = false
 		})
-		//do shit when we get a chat packet
-		mcclient.on('chat', function(packet) {
-			//parse
-			var msg = JSON.parse(packet.message);
-			//i have to do this ugly undefined shit, because someone thought it would be a good idea to make 
-			//no tranlate string for like tellraw n shit, ex. "Welcome to server!"
-			if (msg.translate != undefined) {
-			  if (msg.translate == "chat.type.text" || msg.translate == "chat.type.announcement"){
-			    user = msg.with[0].text
-			    usermessage = msg.with[1]
-			    chann.send("["+user+"]: "+usermessage)
-			  }
-			}
-			else{
-				//you might wanna close your eyes, im not rewriting this
-				bstr = ""
-				if (msg.extra == undefined) return;
-				msg.extra.forEach(
-					function(object){
-					  if (object.text != undefined){
-					    bstr = bstr + object.text
-					  }
-					  if ((typeof object) == "string") {
-					    bstr = bstr + object
-					  }
-					}
-				)
-				chann.send(bstr)
-				bstr = ""
-			}
-		});
-		mcclient.on('error', function () {});
+		bot.on('message', function(json) {
+			bstr = ""
+			if (json.extra == undefined) return;
+			json.extra.forEach(
+				function(object){
+				  if (object.text != undefined){
+				    bstr = bstr + object.text
+				  }
+				  if ((typeof object) == "string") {
+				    bstr = bstr + object
+				  }
+				}
+			)
+			if (bstr == "") return;
+			chann.send(bstr)
+			bstr = ""
+		})
+		bot.on('error', err => console.log(err))
     }
     if(command == "disconnect"){
     	if (connected) {
-    		//tell the server we're disconnecting
-    		mcclient.write(0xff, {reason: "client.disconnect"});
+    		bot.quit()
     		chann.send("Telling the server we're disconnecting")
-    		//if the server hates you and doesnt accept then forcibly quit and kill the client, fuck you server
-    		mcclient.end()
-    	}
-    }
+			bot.end()
+			if (viewer) {
+				bot.viewer.close()
+				viewer = false
+			}
+			connected = false
+		}
+		else{
+			chann.send("Not connected to anything!")
+		}
+	}
+	if (command == "viewer"){
+		if(!connected){
+			chann.send("You need to be connected to a server to start the viewer!")
+		}
+		else if(viewer) {
+			chann.send("Disabling the viewer!")
+			bot.viewer.close()
+			viewer = false
+			return
+		}
+		else{
+			mineflayerViewer(bot, { port: 8080 } )
+			viewer = true
+			chann.send("Attempting to start the viewer on port 8080, you may close it by running #viewer again")
+		}
+	}
 });
