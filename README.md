@@ -19,3 +19,6 @@ config.json:
 2. `listenid` is your discord id, so only you can use it to prevent others from abusing it.
 3. `prefix` is what the bot will listen to when using commands.
 4. `email` and `password`, self-explanatory, email becomes username if you leave password blank when using the offline mode.
+
+future:
+I may plan on making a version that uses the session system from mojang so im not storing passwords from other people, however im not sure if i can trust people to not try and login from public discord servers, maybe i could start with #login and tell them to stop being an idiot if they are not in dms
