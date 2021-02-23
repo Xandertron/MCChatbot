@@ -17,7 +17,7 @@ dclient.on("ready", () => {
 });
 
 dclient.on("message", message => {
-	if (message.author.bot || message.author.id != config.ownerid) return;
+	if (message.author.bot || message.author.id != config.listenid) return;
 	if (!message.content.startsWith(prefix)) {
 		if (connected) {
 			bot.chat(message.content)
