@@ -23,37 +23,37 @@ dclient.on("message", message => {
 			bot.chat(message.content)
 		}
 	}
-    const args = message.content.slice(prefix.length).trim().split(" ");
-    const command = args.shift().toLowerCase();
-    if (command == "connect") {
+	const args = message.content.slice(prefix.length).trim().split(" ");
+	const command = args.shift().toLowerCase();
+	if (command == "connect") {
 		if (connected) return;
-    	chann = message.channel
-    	const nport = (args[1] == undefined) ? 25565 : args[1]
-    	bot = mineflayer.createBot({
-    		host: args[0],
-    		port: nport,
-		  	username: config.email,
-		  	password: config.password
+		chann = message.channel
+		const nport = (args[1] == undefined) ? 25565 : args[1]
+		bot = mineflayer.createBot({
+			host: args[0],
+			port: nport,
+			username: config.email,
+			password: config.password
 		});
 		bot.on('login', function () {
 			chann.send('Connected!')
 			connected = true
 		})
 		bot.on('kicked', (reason, loggedIn) => {
-			chann.send('Kicked: '+reason)
+			chann.send('Kicked: ' + reason)
 			connected = false
 		})
-		bot.on('message', function(json) {
+		bot.on('message', function (json) {
 			bstr = ""
 			if (json.extra == undefined) return;
 			json.extra.forEach(
-				function(object){
-				  if (object.text != undefined){
-				    bstr = bstr + object.text
-				  }
-				  if ((typeof object) == "string") {
-				    bstr = bstr + object
-				  }
+				function (object) {
+					if (object.text != undefined) {
+						bstr = bstr + object.text
+					}
+					if ((typeof object) == "string") {
+						bstr = bstr + object
+					}
 				}
 			)
 			if (bstr == "") return;
@@ -61,11 +61,11 @@ dclient.on("message", message => {
 			bstr = ""
 		})
 		bot.on('error', err => console.log(err))
-    }
-    if(command == "disconnect"){
-    	if (connected) {
-    		bot.quit()
-    		chann.send("Telling the server we're disconnecting")
+	}
+	if (command == "disconnect") {
+		if (connected) {
+			bot.quit()
+			chann.send("Telling the server we're disconnecting")
 			bot.end()
 			if (viewer) {
 				bot.viewer.close()
@@ -73,22 +73,22 @@ dclient.on("message", message => {
 			}
 			connected = false
 		}
-		else{
+		else {
 			chann.send("Not connected to anything!")
 		}
 	}
-	if (command == "viewer"){
-		if(!connected){
+	if (command == "viewer") {
+		if (!connected) {
 			chann.send("You need to be connected to a server to start the viewer!")
 		}
-		else if(viewer) {
+		else if (viewer) {
 			chann.send("Disabling the viewer!")
 			bot.viewer.close()
 			viewer = false
 			return
 		}
-		else{
-			mineflayerViewer(bot, { port: 8080 } )
+		else {
+			mineflayerViewer(bot, { port: 8080 })
 			viewer = true
 			chann.send("Attempting to start the viewer on port 8080, you may close it by running #viewer again")
 		}
